@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      # Mapeia uma pasta no seu disco D: para armazenar os modelos
+      - D:/ollama-webui/ollama-data:/root/.ollama
+    environment:
+      # Baixa o modelo 'llama3' automaticamente na primeira vez
+      - OLLAMA_MODELS=llama3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+  
+  open-webui:
+    container_name: open-webui
+    image: ghcr.io/open-webui/open-webui:main
+    restart: always
+    ports:
+      - "3000:8080"
+    volumes:
+      # Mapeia um volume para armazenar o histórico de chat do Open WebUI
+      - open-webui-data:/app/backend/data
+    environment:
+      # O hostname é 'ollama', o nome do serviço do Docker Compose
+      - OLLAMA_API_BASE_URL=http://ollama:11434
+    depends_on:
+      # Garante que o Ollama inicie antes do Open WebUI
+      - ollama
+
+volumes:
+  open-webui-data: {}
