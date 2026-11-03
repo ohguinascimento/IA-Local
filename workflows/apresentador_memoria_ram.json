@@ -1,0 +1,188 @@
+{
+  "last_node_id": 9,
+  "last_link_id": 11,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [25, 180],
+      "size": {"0": 315, "1": 98},
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [1], "shape": 3, "slot_index": 0},
+        {"name": "CLIP", "type": "CLIP", "links": [2, 3], "shape": 3, "slot_index": 1},
+        {"name": "VAE", "type": "VAE", "links": [4], "shape": 3, "slot_index": 2}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["DreamShaper_8_pruned.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "ADE_AnimateDiffLoaderWithContext",
+      "pos": [380, 180],
+      "size": {"0": 315, "1": 130},
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1, "slot_index": 0},
+        {"name": "context_options", "type": "CONTEXT_OPTIONS", "link": null},
+        {"name": "motion_lora", "type": "MOTION_LORA", "link": null}
+      ],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [5], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "ADE_AnimateDiffLoaderWithContext"},
+      "widgets_values": [
+        "mm_sd_v15_v2.ckpt",
+        "sqrt_linear (AnimateDiff)"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [380, 380],
+      "size": {"0": 420, "1": 200},
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 2, "slot_index": 0}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [6], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "CLIPTextEncode (Prompt Positivo)"},
+      "widgets_values": ["masterpiece, photorealistic portrait of a friendly male tech presenter talking directly to camera, subtle smiling, gesturing with hands, modern tech studio in background, soft bokeh, glowing neon blue lights, DDR5 RAM sticks on the desk, 4k, cinematic lighting, sharp focus, natural movement"]
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncode",
+      "pos": [380, 610],
+      "size": {"0": 420, "1": 150},
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 3, "slot_index": 0}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [7], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "CLIPTextEncode (Prompt Negativo)"},
+      "widgets_values": ["bad anatomy, distorted face, extra limbs, bad eyes, unnatural motion, blurry, worst quality, low quality, cartoon, 3d render, plastic skin, flicker, watermark, glitch"]
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [380, 790],
+      "size": {"0": 315, "1": 106},
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [8], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "EmptyLatentImage"},
+      "widgets_values": [512, 512, 16]
+    },
+    {
+      "id": 6,
+      "type": "KSampler",
+      "pos": [830, 180],
+      "size": {"0": 315, "1": 262},
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 5, "slot_index": 0},
+        {"name": "positive", "type": "CONDITIONING", "link": 6, "slot_index": 1},
+        {"name": "negative", "type": "CONDITIONING", "link": 7, "slot_index": 2},
+        {"name": "latent_image", "type": "LATENT", "link": 8, "slot_index": 3}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [9], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [98765432, "randomize", 20, 7.0, "euler_ancestral", "normal", 1]
+    },
+    {
+      "id": 7,
+      "type": "VAEDecode",
+      "pos": [1180, 180],
+      "size": {"0": 210, "1": 46},
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 9, "slot_index": 0},
+        {"name": "vae", "type": "VAE", "link": 4, "slot_index": 1}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [10], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"}
+    },
+    {
+      "id": 8,
+      "type": "VHS_VideoCombine",
+      "pos": [1420, 180],
+      "size": {"0": 315, "1": 350},
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 10, "slot_index": 0},
+        {"name": "audio", "type": "AUDIO", "link": 11, "slot_index": 1},
+        {"name": "meta_batch", "type": "VHS_BatchManager", "link": null},
+        {"name": "vae", "type": "VAE", "link": null}
+      ],
+      "outputs": [
+        {"name": "Filenames", "type": "VHS_FILENAMES", "links": null}
+      ],
+      "properties": {"Node name for S&R": "VHS_VideoCombine (Salvar MP4 com Audio)"},
+      "widgets_values": {
+        "frame_rate": 8,
+        "loop_count": 0,
+        "filename_prefix": "apresentador_ram_mp4",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_output": true
+      }
+    },
+    {
+      "id": 9,
+      "type": "VHS_LoadAudio",
+      "pos": [1420, 560],
+      "size": {"0": 315, "1": 120},
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "audio", "type": "AUDIO", "links": [11], "shape": 3, "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "VHS_LoadAudio (Carregar Audio Narrado)"},
+      "widgets_values": ["narracao_ram.mp3"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 0, "MODEL"],
+    [2, 1, 1, 3, 0, "CLIP"],
+    [3, 1, 1, 4, 0, "CLIP"],
+    [4, 1, 2, 7, 1, "VAE"],
+    [5, 2, 0, 6, 0, "MODEL"],
+    [6, 3, 0, 6, 1, "CONDITIONING"],
+    [7, 4, 0, 6, 2, "CONDITIONING"],
+    [8, 5, 0, 6, 3, "LATENT"],
+    [9, 6, 0, 7, 0, "LATENT"],
+    [10, 7, 0, 8, 0, "IMAGE"],
+    [11, 9, 0, 8, 1, "AUDIO"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

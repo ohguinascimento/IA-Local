@@ -50,9 +50,10 @@ Write-Host "Modelos otimizados para funcionar com 6GB VRAM (Offload para RAM)`n"
 
 if (-not $Option) {
     Write-Host "Escolha uma opcao:"
-    Write-Host "1 - AnimateDiff Pack (DreamShaper 8 SD1.5 + Motion Module v2) [Recomendado: ~3.9 GB]" -ForegroundColor Yellow
-    Write-Host "2 - LTX-Video 0.9.1 (Lightricks Text-to-Video 2B) [~4.8 GB]" -ForegroundColor Yellow
-    Write-Host "3 - Exibir links para Wan 2.1 (1.3B GGUF)" -ForegroundColor Yellow
+    Write-Host "1 - AnimateDiff Pack (DreamShaper 8 SD1.5 + Motion Module v2) [~3.9 GB]" -ForegroundColor Yellow
+    Write-Host "2 - epiCPhotoGasm Checkpoint (Ultra Realismo Humano Fotográfico) [~2.1 GB]" -ForegroundColor Green
+    Write-Host "3 - LTX-Video 0.9.1 (Lightricks Text-to-Video 2B) [~4.8 GB]" -ForegroundColor Yellow
+    Write-Host "4 - Exibir links para Wan 2.1 (1.3B GGUF)" -ForegroundColor Yellow
     Write-Host "0 - Sair"
     $Option = Read-Host "Digite o numero da opcao"
 }
@@ -74,12 +75,18 @@ switch ($Option) {
         Write-Host "Pronto! O pacote AnimateDiff esta pronto para uso no ComfyUI." -ForegroundColor Green
     }
     "2" {
+        Write-Host "`nIniciando download do epiCPhotoGasm (Hiper-realismo de Pessoas)..." -ForegroundColor Cyan
+        $epicDest = "$BASE_DIR\checkpoints\epicphotogasm_v1.safetensors"
+        $epicUrl = "https://huggingface.co/Yntec/epiCPhotoGasm/resolve/main/epicphotogasm_v1.safetensors"
+        Download-FileWithProgress -Url $epicUrl -DestinationPath $epicDest -Description "Checkpoint epiCPhotoGasm (SD 1.5 Fotográfico)"
+    }
+    "3" {
         Write-Host "`nIniciando download do LTX-Video..." -ForegroundColor Cyan
         $ltxDest = "$BASE_DIR\checkpoints\ltx-video-2b-v0.9.1.safetensors"
         $ltxUrl = "https://huggingface.co/Lightricks/LTX-Video/resolve/main/ltx-video-2b-v0.9.1.safetensors"
         Download-FileWithProgress -Url $ltxUrl -DestinationPath $ltxDest -Description "LTX-Video 2B v0.9.1 Checkpoint"
     }
-    "3" {
+    "4" {
         Write-Host "`nO Wan 2.1 (1.3B) possui multiplos componentes quantizados (GGUF):" -ForegroundColor Cyan
         Write-Host "1. Modelo Diffusion (GGUF Q4_K_M): https://huggingface.co/city96/Wan2.1-T2V-1.3B-gguf" -ForegroundColor White
         Write-Host "   Salvar em: storage/comfyui/models/diffusion_models/" -ForegroundColor DarkGray

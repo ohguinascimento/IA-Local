@@ -138,7 +138,7 @@
       ],
       "outputs": [],
       "properties": {"Node name for S&R": "SaveAnimatedWEBP"},
-      "widgets_values": [8, "comfyui_video", 90]
+      "widgets_values": ["video_ia", 8.0, false, 85, "default"]
     }
   ],
   "links": [

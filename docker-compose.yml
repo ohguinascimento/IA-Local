@@ -54,7 +54,7 @@ services:
       # Otimizacao especifica para RTX 2060 (6GB VRAM):
       # --lowvram: ativa offload automatico de pesos para os 32GB de RAM do sistema
       # --preview-method auto: previne travamentos durante a geracao de frames
-      - CLI_ARGS=--listen 0.0.0.0 --port 8188 --lowvram --preview-method auto
+      - CLI_ARGS=--listen 0.0.0.0 --port 8188 --lowvram --preview-method auto --enable-manager
       - PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_mb:128
     volumes:
       - ./storage/comfyui/cache/dot-cache:/root/.cache
