@@ -1,0 +1,31 @@
+# Environment & OS
+.env
+.DS_Store
+Thumbs.db
+
+# Storage & Large Files (Models, Cache, Data)
+storage/
+comfyui-storage/
+*.safetensors
+*.ckpt
+*.pt
+*.bin
+*.pth
+*.gguf
+*.onnx
+
+# Video and Image outputs
+*.mp4
+*.mkv
+*.avi
+*.gif
+*.webp
+*.png
+*.jpg
+*.jpeg
+
+# Cache directories
+.cache/
+__pycache__/
+*.log
+
